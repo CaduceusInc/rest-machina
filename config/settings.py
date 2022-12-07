@@ -7,7 +7,7 @@ import os
 # ------------------------------------------------------------------------------
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', x)
+location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), '../starter', x)
 
 
 # Quick-start development settings - unsuitable for production
