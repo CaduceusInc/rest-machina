@@ -1,14 +1,15 @@
-from pathlib import Path
-from decouple import config
 import os
+from datetime import timedelta
+from pathlib import Path
 
+from decouple import config
+from django.utils.translation import gettext_lazy as _
 
 # GENERAL
 # ------------------------------------------------------------------------------
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), '../starter', x)
-
+location = lambda x: os.path.join(BASE_DIR, 'config', x)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -16,14 +17,11 @@ location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), '
 # SECURITY WARNING: keep the secret key used in production secret!
 
 SECRET_KEY = config('SECRET_KEY')
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 # SECURITY WARNING: don't run with debug turned on in production!.
 DEBUG = config('DEBUG', cast=bool)
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
-
 
 # Application definition
 # ------------------------------------------------------------------------------
@@ -35,7 +33,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    
 
     # Third-party
     'allauth',
@@ -46,10 +43,12 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'graphene_django',
+    'drf_yasg',
 
     # Local
     'users',
-    
+    'apps.open_ai',
+
 ]
 
 SITE_ID = 1
@@ -69,11 +68,9 @@ MIDDLEWARE = [
 
 ]
 
-
 # URLS
 # ------------------------------------------------------------------------------
 ROOT_URLCONF = 'config.urls'
-
 
 # Templates
 # ------------------------------------------------------------------------------
@@ -99,8 +96,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
-
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
@@ -125,7 +120,6 @@ DATABASES = {
         # }
     }
 }
-
 
 # PASSWORDS
 # ------------------------------------------------------------------------------
@@ -154,9 +148,14 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_PARSER_CLASSES": [
+        "rest_framework.parsers.JSONParser",
+    ],
 }
-
 
 # Internationalization
 # ------------------------------------------------------------------------------
@@ -170,8 +169,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-
 # STATIC
 # ------------------------------------------------------------------------------
 
@@ -183,7 +180,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [str(BASE_DIR.joinpath('static'))]
 # http://whitenoise.evans.io/en/stable/django.html#add-compression-and-caching-support
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
 
 # DJANGO-CRISPY-FORMS CONFIGS
 # ------------------------------------------------------------------------------
@@ -206,7 +202,6 @@ INTERNAL_IPS = ['127.0.0.1']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 # ACCOUNT_SESSION_REMEMBER = True
 # ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
@@ -214,3 +209,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ACCOUNT_AUTHENTICATION_METHOD = 'email'
 # ACCOUNT_EMAIL_REQUIRED = True
 # ACCOUNT_UNIQUE_EMAIL = True
+
+# Setting the JWT header type to Bearer.
+SIMPLE_JWT = {
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "ALGORITHM": "HS512",
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+}
+# Setting the security definition for the swagger documentation.
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "Auth Token eg [Bearer (JWT)]": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+        }
+    },
+}
