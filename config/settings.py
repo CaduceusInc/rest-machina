@@ -226,3 +226,7 @@ SWAGGER_SETTINGS = {
         }
     },
 }
+
+
+# Set OPENAI_API_KEY if present in environment
+OPENAI_API_KEY = config('OPENAI_API_KEY', default='')

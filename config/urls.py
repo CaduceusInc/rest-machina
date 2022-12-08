@@ -40,6 +40,7 @@ urlpatterns = [
     path('debug_toolbar', include('debug_toolbar.urls')),
     path('api-auth/', include('rest_framework.urls')),
     # path("graphql", GraphQLView.as_view(graphiql=True, schema=schema)),
+    path('open_ai/', include('apps.open_ai.urls')),
 ]
 
 # external urls
